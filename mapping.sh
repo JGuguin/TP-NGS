@@ -39,7 +39,7 @@ gunzip Homo_sapiens.Chr20.fa.gz
 # Command: bwa index
 # Input: reference (.fa)
 # Ouput: indexed reference (.fa.amb, .fa.ann, .fa.bwt, fa.pac, .fa.sa)
-bwa index Homo_sapiens.Chr20.fa		#créer plein de fichiers qui servent d'accéder rapidement à dofférentes parties du chr
+bwa index Homo_sapiens.Chr20.fa		#créer plein de fichiers qui servent d'accéder rapidement à différentes parties du chr
 
 ######################################################
 ## Mapping of a family trio to the reference genome ##
