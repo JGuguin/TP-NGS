@@ -30,6 +30,11 @@ class Cds(object):
     def seq_length(self):
         return sum(self.exons_length())
 
+    def test(self):
+        return self.seq_length()%3==0
+
+
+
     def befile_lines(self):
         lines = []
         for start, end in self.exons:
@@ -69,7 +74,8 @@ if __name__ == '__main__':
     path = os.getcwd()
 
     dict_errors_info = {"NotConfirmed": "GTF file: {0} cds have a start or end that could not be confirmed",
-                        "EmptyExon": "GTF file: {0} cds have at least one empty track"}
+                        "EmptyExon": "GTF file: {0} cds have at least one empty track",
+                        "Non3multiple": "GTF file: {0} cds length is not a multiple of 3"}
 
     dict_errors_cds = {}
     for error in dict_errors_info:
@@ -86,6 +92,10 @@ if __name__ == '__main__':
 
         if cds.empty_exon():
             dict_errors_cds["EmptyExon"].append(tr_id)
+            continue
+
+        if not cds.test():
+            dict_errors_cds["Non3multiple"].append(tr_id)
             continue
 
         for exon in cds.befile_lines():

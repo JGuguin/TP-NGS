@@ -70,7 +70,7 @@ pip3 install matplotlib --user
 
 cd ${INSTALL_DIR}
 
-for PYTHON_SCRIPT in ./src/*.py
+for PYTHON_SCRIPT in *.py
 do
 chmod a+x ${PYTHON_SCRIPT}
 done
