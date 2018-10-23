@@ -77,3 +77,4 @@ done
 
 echo 'export PATH='$(pwd)':${PATH}' >> ~/.bashrc
 source ~/.bashrc
+# Dit au programme que les scripts pythons peuvent s'exécuter de n'importe où
