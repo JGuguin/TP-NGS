@@ -5,6 +5,7 @@ import os
 
 
 class Cds(object):
+    # Définit de l'objet CDS
     def __init__(self, chromosome, strand, name):
         self.chromosome = chromosome
         self.strand = strand
@@ -32,7 +33,7 @@ class Cds(object):
 
     def test(self):
         return self.seq_length()%3==0
-
+    # Permet de définir un critère : on ne garde que les séquences dont la longueur est multiple de 3
 
 
     def befile_lines(self):
@@ -97,6 +98,7 @@ if __name__ == '__main__':
         if not cds.test():
             dict_errors_cds["Non3multiple"].append(tr_id)
             continue
+            # Teste la condition de longueur des séquences
 
         for exon in cds.befile_lines():
             bedfile.write(exon)
