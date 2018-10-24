@@ -38,6 +38,10 @@ do
     do
     extract_pop.py -p integrated_call_samples_v3.20130502.ALL.panel -k ${POP}
     vcftools --vcf Chr20_intersect.${CLASS}.vcf --keep ${POP}.txt --recode --out ${CLASS}_${POP}
-    vcf_analysis.py -v ${CLASS}_${POP}.recode.vcf
     done
+done
+
+for POP in "EUR" "AFR" "EAS" "AMR" "SAS" "GBR" "FIN" "CHS" "PUR" "CDX" "JPT" "CLM" "IBS" "PEL" "PJL" "KHV" "LWK" "ACB" "GWD" "ESN" "BEB" "MSL" "MXL" "STU" "ITU" "CEU" "YRI" "CHB" "ASW" "TSI" "GIH"
+    do
+    vcf_meta_analysis.py -o Stop_${POP}.recode.vcf -s Syn_${POP}.recode.vcf -n NonSyn_${POP}.recode.vcf -c 200
 done
