@@ -9,23 +9,24 @@ def var(array_1d, n):
     x_2_bar = sum([x * x for x in array_1d]) / n
     x_bar = sum(array_1d) / n
     return x_2_bar - x_bar * x_bar
+
+
 # Définition de la fonction variance
-
-
 def variance_additive(array):
     # Calcul de Va qui est la variance de la somme
     ligne, colonne = array.shape
     liste_var = []
     for i in range(ligne):
-        liste_var.append(var(array[i,:], colonne))
+        liste_var.append(var(array[i, :], colonne))
     return sum(liste_var)
+
 
 def sigma_squared(array):
     # Calcul de sigma2 qui est la somme des variances
     ligne, colonne = array.shape
     liste_score = []
     for j in range(colonne):
-        liste_score.append(sum(array[:,j]))
+        liste_score.append(sum(array[:, j]))
     return var(liste_score, colonne)
 
 
@@ -96,3 +97,4 @@ if __name__ == '__main__':
     print("Analysis performed")
 
     # A la fin on obtient un tableau avec le nombre de SNP en ligne et le nombre d'individus en colonne
+    # Donne Va, sigma2 et le ratio sigma2/Va pour savoir dans quel cas les mutations se trouvent (antagonie, synergie, indépendance)
