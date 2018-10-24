@@ -24,7 +24,7 @@ class Cds(object):
                     print("At least one exon is overlapping with an other")
 
     def nt_position(self, position):
-    # Position ici vient du gtf et fait bien la distinction entre forward et reverse
+        # Position ici vient du gtf et fait bien la distinction entre forward et reverse
         nt = -1
         running_sum = 0
         if self.strand == "+":
@@ -46,30 +46,43 @@ class Cds(object):
         assert (self.seq_length() == len(seq))
         # assert: arrête si ça ne remplit pas les conditions demandées
         position_relative = self.nt_position(position)
+
+        if position_relative == -1:
+            return '', '', '', ''
+
         if self.strand == "-":
             nt_ref = complement[nt_ref]
             nt_alt = complement[nt_alt]
             # Pour lire dans le bon brin
 
-        if position_relative % 3 == 2:
-            # Position 3 du codon
-            ref_codon = (seq[position_relative - 2], seq[position_relative - 1], nt_ref)
-            alt_codon = (seq[position_relative - 2], seq[position_relative - 1], nt_alt)
-        elif position_relative % 3 == 1:
-            # Position 2 du codon
-            ref_codon = (seq[position_relative - 1], nt_ref, seq[position_relative + 1])
-            alt_codon = (seq[position_relative - 1], nt_alt, seq[position_relative + 1])
-        elif position_relative % 3 == 0:
-            # Position 1 du codon
-            ref_codon = (nt_ref, seq[position_relative + 1], seq[position_relative + 2])
-            alt_codon = (nt_alt, seq[position_relative + 1], seq[position_relative + 2])
+        # if position_relative % 3 == 2:
+        #     # Position 3 du codon
+        #     ref_codon = (seq[position_relative - 2], seq[position_relative - 1], nt_ref)
+        #     alt_codon = (seq[position_relative - 2], seq[position_relative - 1], nt_alt)
+        # elif position_relative % 3 == 1:
+        #     # Position 2 du codon
+        #     ref_codon = (seq[position_relative - 1], nt_ref, seq[position_relative + 1])
+        #     alt_codon = (seq[position_relative - 1], nt_alt, seq[position_relative + 1])
+        # elif position_relative % 3 == 0:
+        #     # Position 1 du codon
+        #     ref_codon = (nt_ref, seq[position_relative + 1], seq[position_relative + 2])
+        #     alt_codon = (nt_alt, seq[position_relative + 1], seq[position_relative + 2])
 
-        ref_aa = codontable["".join(ref_codon)]
-        nt_ref_fasta = seq[position_relative]
+        reste = position_relative %3
+        ref_codon = str(seq[position_relative - reste: position_relative - reste + 3])
+        alt_codon = list(ref_codon)
+        # On ne peut pas modifier un seul caractère dans un string,on doit repasser par une liste
+        alt_codon[reste] = nt_alt
+
+        assert (len(ref_codon) == 3)
+
         if nt_ref != seq[position_relative]:
-            print(nt_ref_fasta)
-        # ref_nt position dans le gtf   seq position dans le fasta
+            return "ERROR FASTA VS VCF", "", "", ""
+        # Vérifie que le FASTA et le VCF sont d'accord, sinon met de côté le SNP (voir plus tard)
+
+        ref_aa = codontable[ref_codon]
         alt_aa = codontable["".join(alt_codon)]
+        # Remet la liste en string pour qu'elle puisse être utilisée
 
         return ref_aa, alt_aa, ref_codon, alt_codon
 
@@ -190,8 +203,9 @@ if __name__ == '__main__':
                         ref_aa, alt_aa, ref_codon, alt_codon = cds.amino_acid(dict_fasta[tr_id], pos, ref_nt, alt_nt)
                         if ref_aa == '':
                             snp_types.append("NotInCds")
-                        elif ref_aa == '!':
+                        elif ref_aa == 'ERROR FASTA VS VCF':
                             snp_types.append("RefDiff")
+                            # Met de côté les SNP pour lesquels le FASTA et le VCF ne sont pas d'accord
                         elif ref_aa == '-' or alt_aa == '-':
                             snp_types.append("NotIdentified")
                         elif ref_aa == 'X':
@@ -220,6 +234,7 @@ if __name__ == '__main__':
                     dict_cat_nbr["RefStop"] += 1
                 else:
                     max_type = most_common(snp_types)
+                    # Assigne le SNP dans la catégorie pour laquelle il est le plus souvent pour chaque transcrit dans lequel il apparaît
                     if max_type == "Stop":
                         stop_file.write(line)
                         dict_cat_nbr["Stop"] += 1
