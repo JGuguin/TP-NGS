@@ -13,7 +13,7 @@ gunzip ALL.chr20_GRCh38.genotypes.20170504.vcf.gz
 wget ftp://ftp.ensembl.org/pub/release-94/gtf/homo_sapiens/Homo_sapiens.GRCh38.94.chr.gtf.gz
 gunzip Homo_sapiens.GRCh38.94.chr.gtf.gz
 
-# Filtre les intervalles bien annotés avec début et fin d'exons
+# Filtre les intervalles bien annotés avec début et fin d'exons et ne garde que les CDS dont la longueur est multiple de 3
 gtf_to_bed.py -g Homo_sapiens.GRCh38.94.chr.gtf
 # [-h] optionnel
 
