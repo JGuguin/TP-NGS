@@ -1,3 +1,5 @@
+# Ce script permet de faire de l'appel de variants afin de savoir en un coup d'oeil où se trouvent les différences par rapport au génome de référence et quel est le génotype des individus à cet endroit
+
 #!/bin/bash
 WORK_DIR=/mnt/data/variant_calling
 cd ${WORK_DIR}
@@ -72,26 +74,26 @@ java -jar ${PICARD} CreateSequenceDictionary \
 ### Prepare GATK input data #
 #############################
 
+# On peut trier les exons et enlever tout ce qui n'est pas des exons afin de limiter les alignements non spécifiques qui viendraient paralyser l'analyse.
 
-#Juste pour les exons
-
-#Téléchargement de l'exome
+# Téléchargement de l'exome
 wget ftp://ftp.ensembl.org/pub/release-93/gtf/homo_sapiens/Homo_sapiens.GRCh38.93.chr.gtf.gz
 gunzip Homo_sapiens.GRCh38.93.chr.gtf.gz
 
-#On ne veut garder que les exons car le fichier importer comporte de nombreuses choses
+# On ne veut garder que les exons car le fichier .gtf comprend de nombreuses informations comme les exons, les introns, les transcrits...
 grep "exon_id" Homo_sapiens.GRCh38.93.chr.gtf > exon.gtf
 bedtools sort -i exon.gtf > exon.sort.gtf
 bedtools merge -i exon.sort.gtf > exon.merge.gtf
 
-#Faire une boucle pour tout traiter
+# On réalise une boucle pour tout traiter
 for FILE_NAME in "HG02024" "HG02025" "HG02026"
 do
 
 # Mark Duplicate reads
 # Command: MarkDuplicates (PICARDtools)
 # Input: alignment (.bam)
-# Ouput: alignment with duplicates marked (.bam)	# Ne prend pas en compte les duplicats mais ne les supprime pas pour autant
+# Ouput: alignment with duplicates marked (.bam)
+# Ne prend pas en compte les duplicats mais ne les supprime pas pour autant
 java -jar ${PICARD} MarkDuplicates \
 	REMOVE_DUPLICATES=FALSE \
 	I=${FILE_NAME}.bam \
@@ -112,7 +114,8 @@ java -jar ${PICARD} BuildBamIndex \
 # Find regions that need to be realigned
 # Command: gatk RealignerTargetCreator
 # Input: preprocessed alignment (.bam) + compressed known indels (.vcf.gz) + reference genome (.fa)
-# Output: list of intervals (.list / .txt)	# -T dit à java quel outil de GATK on va utiliser
+# Output: list of intervals (.list / .txt)
+# -T dit à java quel outil de GATK on va utiliser
 java -jar ${GATK} -T RealignerTargetCreator \
 	-R ${REF_GENOME} \
 	-known ${KNOWN_INDELS} \
@@ -133,8 +136,10 @@ java -jar ${GATK} -T IndelRealigner \
 
 
 ################################
-### Base quality recalibration #	# Utilise les SNPs déjà connus pour chercher les endroits où on est sûrs de ne pas se tromper
+### Base quality recalibration #
 ################################
+
+# Utilise les SNPs déjà connus pour chercher les endroits où on est sûrs de ne pas se tromper
 
 # Generate a base recalibration table to analyse patterns of covariation in the dataset
 # Command: gatk BaseRecalibrator
@@ -165,9 +170,11 @@ java -jar ${GATK} -T PrintReads \
 ### Call variants #
 ###################
 
+# Cette ligne de commande permet de terminer ce qui a été commencé pour le tri des exons
+
 bedtools intersect -header -a ${FILE_NAME}.recal_reads.bam -b exon.gtf > ${FILE_NAME}.exon.recal_reads.bam
 
-# Perform variant calling sur les exons
+# Perform variant calling sur les exons uniquement
 # Command: gatk HaplotypeCaller
 # Input: base quality recalibrated alignement (.bam) + reference genome (.fa)
 # Output: Genomic variant calling file (.g.vcf)
@@ -180,7 +187,7 @@ java -jar ${GATK} -T HaplotypeCaller \
                   -variant_index_parameter 128000 \
                   --emitRefConfidence GVCF
 
-# Perform variant calling
+# Perform variant calling sur les exons uniquement
 # Command: gatk GenotypeGVCFs
 # Input : genomic variant calling files (.g.vcf) + reference genome (.fa)
 # Output: Variant calling file (.vcf)
@@ -202,7 +209,7 @@ java -jar ${GATK} -T HaplotypeCaller \
                   -variant_index_parameter 128000 \
                   --emitRefConfidence GVCF
 				  
-# Perform variant calling
+# Perform variant calling sur tout
 # Command: gatk GenotypeGVCFs
 # Input : genomic variant calling files (.g.vcf) + reference genome (.fa)
 # Output: Variant calling file (.vcf)
