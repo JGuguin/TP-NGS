@@ -129,15 +129,3 @@ De plus, prendre un cut-off de 2504 n'était pas vraiment pertinent, dans le sen
 Concernant la référence justement, il est possible de certains SNP aient été identifiés dans des populations et pas d'autres du fait d'une différence majeure avec la référence (qui est européenne). Il faudrait peut-être dans ce cas adapter la référence à chaque population étudiée.
 
 Toutefois, si on s'intéresse aux mutations vraiment rares dans les populations (fréquence inférieure à 0,01%), on remarque que celles-ci sont majoritairement indépendantes ou répulsives, comme ce qui a pu être observé dans l'article de Sohail et al.
-
-
-
-
-
-
-
-
-
-
-
-
