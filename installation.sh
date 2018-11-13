@@ -138,3 +138,4 @@ cd picard/
 echo 'export PICARD='$(pwd)'/build/libs/picard.jar' >> ~/.bashrc
 
 source ~/.bashrc	#met à jour la variable path qu'on a modifié précédemment
+ 
