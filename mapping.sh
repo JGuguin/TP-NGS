@@ -282,3 +282,4 @@ samtools index father.bam
 #Alignement des fichiers .bam de la fille, de la mère et du père sur IGV.
 #Comparaison avec le génome de référence Human hg38
 #Ne pas oublier de transférer avec les fichiers .bai nécessaires à la lecture des .bam
+ 
