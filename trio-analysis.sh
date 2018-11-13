@@ -1,4 +1,5 @@
-#On donne au programme l'information que les trois individus sont apparentés pour voir les différences de traitement
+# Ce script permet de repérer les différences de SNPs entre les individus.
+# On donne au programme l'information que les trois individus sont apparentés pour voir les différences de traitement
 
 #!/bin/bash
 WORK_DIR=/mnt/data/variant_calling/trio
@@ -18,7 +19,7 @@ java -jar ${PICARD}
 ### Joint variant calling ##
 ############################
 
-#Permet de grouper en un seul fichier tous les variants calling
+# Permet de grouper en un seul fichier tous les variants calling
 
 REF_GENOME=Homo_sapiens.Chr20.fa
 PEDIGREE=${WORK_DIR}/20130606_g1k.ped
@@ -50,7 +51,7 @@ java -jar ${GATK} -T GenotypeGVCFs \
 ### Post-processing: Analysis of trios #
 ########################################
 
-#Indique que les trois individus sont apparentés
+# Indique que les trois individus sont apparentés
 
 # Modify PEDIGREE to keep only first 6 columns and no header
 cut -f 1-6 ${PEDIGREE} |sed '1,1d' > ${PEDIGREE}.txt
